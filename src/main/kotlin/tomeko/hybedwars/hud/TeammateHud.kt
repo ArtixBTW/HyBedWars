@@ -20,6 +20,7 @@ import org.polyfrost.compose.composables.PolyRow
 import org.polyfrost.compose.composables.padding
 import org.polyfrost.compose.composables.size
 import org.polyfrost.compose.layout.PolyInsets
+import org.polyfrost.compose.mc.McFontQueue
 import org.polyfrost.compose.render.PolyColor
 import org.polyfrost.oneconfig.api.config.v1.annotations.*
 import org.polyfrost.oneconfig.api.hud.v1.Hud
@@ -59,6 +60,17 @@ class TeammateHud
 
         private const val COLUMN_GAP = 4f
         private const val ROW_GAP = 1f
+
+        // Vanilla colors of the § codes 0-9 and a-f
+        private const val LEGACY_CODES = "0123456789abcdef"
+        private val LEGACY_RGB = intArrayOf(
+            0xFF000000.toInt(), 0xFF0000AA.toInt(), 0xFF00AA00.toInt(), 0xFF00AAAA.toInt(),
+            0xFFAA0000.toInt(), 0xFFAA00AA.toInt(), 0xFFFFAA00.toInt(), 0xFFAAAAAA.toInt(),
+            0xFF555555.toInt(), 0xFF5555FF.toInt(), 0xFF55FF55.toInt(), 0xFF55FFFF.toInt(),
+            0xFFFF5555.toInt(), 0xFFFF55FF.toInt(), 0xFFFFFF55.toInt(), 0xFFFFFFFF.toInt()
+        )
+        private val GRAY = LEGACY_RGB[7]
+        private val WHITE = LEGACY_RGB[15]
         //?}
 
         private const val HEART_SIZE = 9
@@ -214,12 +226,39 @@ class TeammateHud
     }
 
     //? if !forge {
-    private class Row(val name: String, val health: String, val alive: Boolean)
+    /**
+     * OneConfig's Compose text renderer skips § color codes instead of applying them,
+     * so every piece of text carries its color separately. Null means the HUD's own text color.
+     */
+    private class Row(
+        val name: String,
+        val nameColor: Int?,
+        val health: String,
+        val healthColor: Int?,
+        val alive: Boolean
+    )
 
     // Starts with the example rows so the HUD editor's preview card has something to show
     private var rowsState: MutableState<List<Row>> = mutableStateOf(EXAMPLE.map(::toRow))
 
-    private fun toRow(t: Teammate) = Row(nameText(t), healthText(t), !t.dead)
+    private fun toRow(t: Teammate): Row {
+        val health = healthText(t)
+        return Row(
+            name = t.displayName.removeFormatting(),
+            nameColor = if (t.dead) GRAY else legacyColor(t.displayName),
+            health = health.removeFormatting(),
+            // §f means "no health color", so it follows the HUD's text color
+            healthColor = legacyColor(health).takeUnless { it == WHITE },
+            alive = !t.dead
+        )
+    }
+
+    /** ARGB of the color code a string starts with, or null if it doesn't start with one. */
+    private fun legacyColor(text: String): Int? {
+        if (text.length < 2 || text[0] != '§') return null
+        val index = LEGACY_CODES.indexOf(text[1].lowercaseChar())
+        return if (index < 0) null else LEGACY_RGB[index]
+    }
 
     init {
         padLeft = 4f
@@ -260,7 +299,11 @@ class TeammateHud
         PolyBox(modifier = hudBackground().padding(PolyInsets(padLeft, padTop, padRight, padBottom))) {
             PolyRow(gap = COLUMN_GAP * scale) {
                 PolyColumn(gap = ROW_GAP * scale) {
-                    for (row in rows) PolyMcText(row.name, color = color, shadow = shadow, scale = scale)
+                    for (row in rows) {
+                        val nameColor = row.nameColor?.let(::PolyColor) ?: color
+                        if (row.alive) PolyMcText(row.name, color = nameColor, shadow = shadow, scale = scale)
+                        else StruckText(row.name, nameColor, shadow, scale)
+                    }
                 }
                 if (showHeart) {
                     PolyColumn(gap = ROW_GAP * scale) {
@@ -268,11 +311,34 @@ class TeammateHud
                     }
                 }
                 PolyColumn(gap = ROW_GAP * scale) {
-                    for (row in rows) PolyMcText(row.health, color = color, shadow = shadow, scale = scale)
+                    for (row in rows) {
+                        val healthColor = row.healthColor?.let(::PolyColor) ?: color
+                        PolyMcText(row.health, color = healthColor, shadow = shadow, scale = scale)
+                    }
                 }
             }
         }
     }
+
+    /** Minecraft text with a strikethrough, which OneConfig's text renderer doesn't support. */
+    @Composable
+    private fun StruckText(text: String, color: PolyColor, shadow: Boolean, scale: Float) {
+        val width = McFontQueue.measureTextWidth(text, scale)
+        val height = McFontQueue.measureTextHeight(scale)
+
+        PolyCanvas(modifier = PolyModifier.size(width, height)) { x, y, _, _ ->
+            val argb = color.argb
+            McFontQueue.renderer?.invoke(canvas, text, x, y, argb, shadow, scale)
+
+            // Same place as vanilla: a one pixel line through the middle, with its own shadow
+            if (shadow) rect(x + scale, y + 4 * scale, width, scale, PolyColor(shadowOf(argb)))
+            rect(x, y + 3 * scale, width, scale, PolyColor(argb))
+        }
+    }
+
+    // Vanilla text shadows are the text color at a quarter brightness
+    private fun shadowOf(argb: Int): Int =
+        (argb and 0xFF000000.toInt()) or ((argb and 0xFCFCFC) shr 2)
 
     @Composable
     private fun Heart(full: Boolean, size: Float) {
