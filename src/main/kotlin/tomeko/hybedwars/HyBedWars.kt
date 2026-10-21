@@ -66,6 +66,7 @@ class HyBedWars
         HeightLimitHud.register()
         MapNameHud.register()
         GameModeHud.register()
+        TeammateHud.register()
         //?}
 
         HypixelPackets.register()

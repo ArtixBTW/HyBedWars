@@ -16,6 +16,7 @@ import org.polyfrost.oneconfig.api.config.v1.annotations.*
 import tomeko.hybedwars.hud.GameModeHud
 import tomeko.hybedwars.hud.HeightLimitHud
 import tomeko.hybedwars.hud.MapNameHud
+import tomeko.hybedwars.hud.TeammateHud
 *///?}
 //? if 1.8.9
 //import tomeko.hybedwars.coloredbeds.ColoredBeds
@@ -274,9 +275,16 @@ object HyBedWarsConfig : Config(
         subcategory = SUBCATEGORY_INFO_HUDS
     )
     var gameModeHud = GameModeHud()
+
+    @HUD(
+        name = "Teammates",
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_INFO_HUDS
+    )
+    var teammateHud = TeammateHud()
     *///?} else {
     @Info(
-        title = "Height Limit, Map Name and Game Mode HUDs can be added by clicking Edit HUD in the top left corner",
+        title = "Height Limit, Map Name, Game Mode and Teammates HUDs can be added by clicking Edit HUD in the top left corner",
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_INFO_HUDS
     )
