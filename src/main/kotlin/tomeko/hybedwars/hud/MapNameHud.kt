@@ -6,7 +6,12 @@ import tomeko.hybedwars.utils.Constants
 //?}
 
 /** Shows the current BedWars map name from the Hypixel Mod API. */
-class MapNameHud : BedwarsTextHud("map_name", "BedWars Map Name", "Map") {
+class MapNameHud : BedwarsTextHud(
+    "map_name",
+    "BedWars Map Name",
+    "Map",
+    "The name of the BedWars map you're playing on."
+) {
     //? if !forge {
     companion object {
         fun register() {

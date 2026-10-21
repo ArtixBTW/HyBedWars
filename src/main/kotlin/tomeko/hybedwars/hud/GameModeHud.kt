@@ -6,7 +6,12 @@ import tomeko.hybedwars.utils.Constants
 //?}
 
 /** Shows the current BedWars mode (Solo, Doubles, 4v4v4v4, ...) from the Hypixel Mod API. */
-class GameModeHud : BedwarsTextHud("game_mode", "BedWars Game Mode", "Mode") {
+class GameModeHud : BedwarsTextHud(
+    "game_mode",
+    "BedWars Game Mode",
+    "Mode",
+    "The BedWars mode you're playing, like Solo, Doubles or 4v4v4v4."
+) {
     //? if !forge {
     companion object {
         fun register() {

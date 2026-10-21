@@ -9,7 +9,12 @@ import tomeko.hybedwars.utils.Constants
 //?}
 
 /** Shows how many blocks are left until the map's build height limit. */
-class HeightLimitHud : BedwarsTextHud("height_limit", "BedWars Height Limit", "Height Limit") {
+class HeightLimitHud : BedwarsTextHud(
+    "height_limit",
+    "BedWars Height Limit",
+    "Height Limit",
+    "How many blocks you can still stack before the map's build limit."
+) {
     //? if !forge {
     companion object {
         fun register() {
