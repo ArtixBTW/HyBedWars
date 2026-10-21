@@ -4,12 +4,14 @@ import net.minecraft.client.Minecraft
 //? if 1.8.9 {
 /*import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSettings
 *///?} else {
 import net.minecraft.client.multiplayer.PlayerInfo
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.Style
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.GameType
 import net.minecraft.world.scores.DisplaySlot
@@ -23,9 +25,13 @@ import tomeko.hybedwars.utils.removeFormatting
 //? if 1.8.9 {
 /*private typealias TabEntry = NetworkPlayerInfo
 private typealias PlayerEntity = EntityPlayer
+/** Texture id of a player's skin. */
+typealias SkinId = ResourceLocation
 *///?} else {
 private typealias TabEntry = PlayerInfo
 private typealias PlayerEntity = Player
+/** Texture id of a player's skin. */
+typealias SkinId = Identifier
 //?}
 
 /**
@@ -40,7 +46,9 @@ object Teammates {
         /** Health in half hearts, or -1 if unknown. */
         val health: Float,
         val maxHealth: Float,
-        val dead: Boolean = false
+        val dead: Boolean = false,
+        /** Skin to draw the head from, or null for the default skin. */
+        val skin: SkinId? = null
     )
 
     //? if !1.8.9 {
@@ -120,6 +128,7 @@ object Teammates {
             if (!includeSelf && name == myName) continue
 
             val displayName = "§$myColor$name"
+            val skin = skinOf(info)
 
             //? if 1.8.9 {
             /*val player: PlayerEntity? = world.getPlayerEntityByName(name)
@@ -139,8 +148,8 @@ object Teammates {
                 if (distSq > rangeSq) continue
 
                 val teammate =
-                    if (isDead(player)) Teammate(displayName, 0f, player.maxHealth, true)
-                    else Teammate(displayName, player.health, player.maxHealth)
+                    if (isDead(player)) Teammate(displayName, 0f, player.maxHealth, true, skin)
+                    else Teammate(displayName, player.health, player.maxHealth, skin = skin)
 
                 if (!teammate.dead || includeDead) {
                     distances[teammate] = distSq
@@ -150,19 +159,19 @@ object Teammates {
             }
 
             if (!alive) {
-                if (includeDead && name in knownTeammates) result.add(Teammate(displayName, 0f, 20f, true))
+                if (includeDead && name in knownTeammates) result.add(Teammate(displayName, 0f, 20f, true, skin))
                 continue
             }
 
             when {
                 // Death animation, before Hypixel switches them to spectator.
                 player != null && isDead(player) ->
-                    if (includeDead) result.add(Teammate(displayName, 0f, player.maxHealth, true))
+                    if (includeDead) result.add(Teammate(displayName, 0f, player.maxHealth, true, skin))
 
-                player != null -> result.add(Teammate(displayName, player.health, player.maxHealth))
+                player != null -> result.add(Teammate(displayName, player.health, player.maxHealth, skin = skin))
 
                 // Out of render distance, fall back to the health Hypixel shows in the tab list.
-                else -> result.add(Teammate(displayName, tabListHealth(name) ?: -1f, 20f))
+                else -> result.add(Teammate(displayName, tabListHealth(name) ?: -1f, 20f, skin = skin))
             }
         }
 
@@ -180,6 +189,13 @@ object Teammates {
         /*info.gameProfile.name
         *///?} else {
         info.profile.name()
+        //?}
+
+    private fun skinOf(info: TabEntry): SkinId =
+        //? if 1.8.9 {
+        /*info.locationSkin
+        *///?} else {
+        info.skin.body().texturePath()
         //?}
 
     private fun isSpectator(info: TabEntry): Boolean =

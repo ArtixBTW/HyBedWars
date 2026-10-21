@@ -7,6 +7,7 @@ import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.resources.DefaultPlayerSkin
 *///?} else {
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -25,6 +26,14 @@ import org.polyfrost.compose.render.PolyColor
 import org.polyfrost.oneconfig.api.config.v1.annotations.*
 import org.polyfrost.oneconfig.api.hud.v1.Hud
 import org.polyfrost.oneconfig.api.hud.v1.HudManager
+import org.jetbrains.skia.FilterMipmap
+import org.jetbrains.skia.FilterMode
+import org.jetbrains.skia.Image
+import org.jetbrains.skia.MipmapMode
+import org.jetbrains.skia.Paint
+import org.jetbrains.skia.Rect
+import tomeko.hybedwars.teammates.PlayerFaces
+import tomeko.hybedwars.teammates.SkinId
 //?}
 import tomeko.hybedwars.config.HyBedWarsConfig
 import tomeko.hybedwars.location.HypixelPackets
@@ -53,6 +62,7 @@ class TeammateHud
         //? if !forge {
         fun register() {
             HudManager.register(TeammateHud(), Constants.MOD_ID, Constants.MOD_ICON)
+            PlayerFaces.register()
         }
 
         private const val SUBCATEGORY_HEALTH = "Health"
@@ -71,9 +81,13 @@ class TeammateHud
         )
         private val GRAY = LEGACY_RGB[7]
         private val WHITE = LEGACY_RGB[15]
+
+        private val NEAREST = FilterMipmap(FilterMode.NEAREST, MipmapMode.NONE)
+        private val DEAD_HEAD = Paint().apply { alpha = 128 }
         //?}
 
         private const val HEART_SIZE = 9
+        private const val HEAD_SIZE = 8
 
         // Placeholder rows for the HUD editor and its preview card
         private val EXAMPLE = listOf(
@@ -83,6 +97,20 @@ class TeammateHud
             Teammate("§cTeammateFour", 0f, 20f, true)
         )
     }
+
+    @Switch(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+        //?}
+        "Show Player Head",
+        description = "Show each teammate's skin face next to their name.",
+        //? if !forge {
+        subcategory = SUBCATEGORY_PLAYERS
+        //?}
+    )
+    var showHead = true
 
     @Switch(
         //? if forge {
@@ -235,7 +263,8 @@ class TeammateHud
         val nameColor: Int?,
         val health: String,
         val healthColor: Int?,
-        val alive: Boolean
+        val alive: Boolean,
+        val skin: SkinId?
     )
 
     // Starts with the example rows so the HUD editor's preview card has something to show
@@ -249,7 +278,8 @@ class TeammateHud
             health = health.removeFormatting(),
             // §f means "no health color", so it follows the HUD's text color
             healthColor = legacyColor(health).takeUnless { it == WHITE },
-            alive = !t.dead
+            alive = !t.dead,
+            skin = t.skin
         )
     }
 
@@ -295,9 +325,14 @@ class TeammateHud
         val color = PolyColor(textColor, textChroma, textChromaSpeed)
         val shadow = showShadow
 
-        // One column each for names, hearts and health so every row lines up
+        // One column each for heads, names, hearts and health so every row lines up
         PolyBox(modifier = hudBackground().padding(PolyInsets(padLeft, padTop, padRight, padBottom))) {
             PolyRow(gap = COLUMN_GAP * scale) {
+                if (showHead) {
+                    PolyColumn(gap = ROW_GAP * scale) {
+                        for (row in rows) Head(PlayerFaces.get(row.skin), row.alive, scale)
+                    }
+                }
                 PolyColumn(gap = ROW_GAP * scale) {
                     for (row in rows) {
                         val nameColor = row.nameColor?.let(::PolyColor) ?: color
@@ -339,6 +374,24 @@ class TeammateHud
     // Vanilla text shadows are the text color at a quarter brightness
     private fun shadowOf(argb: Int): Int =
         (argb and 0xFF000000.toInt()) or ((argb and 0xFCFCFC) shr 2)
+
+    /** A player's face, faded out when they're dead. Keeps its space while the skin is still loading. */
+    @Composable
+    private fun Head(face: Image?, alive: Boolean, scale: Float) {
+        // As tall as a line of text so the head column lines up with the names
+        val size = HEAD_SIZE * scale
+        PolyCanvas(modifier = PolyModifier.size(size, McFontQueue.measureTextHeight(scale))) { x, y, _, _ ->
+            if (face == null) return@PolyCanvas
+            canvas.drawImageRect(
+                face,
+                Rect.makeWH(HEAD_SIZE.toFloat(), HEAD_SIZE.toFloat()),
+                Rect.makeXYWH(x, y, size, size),
+                NEAREST,
+                if (alive) null else DEAD_HEAD,
+                true
+            )
+        }
+    }
 
     @Composable
     private fun Heart(full: Boolean, size: Float) {
@@ -391,12 +444,22 @@ class TeammateHud
             healthWidth = maxOf(healthWidth, font.getStringWidth(healthText(t)))
         }
 
-        val heartX = nameWidth + gap
+        val nameX = if (showHead) HEAD_SIZE + 2 else 0
+        val heartX = nameX + nameWidth + gap
         val healthX = if (showHeart) heartX + HEART_SIZE + 1 else heartX
 
         var y = 0
         for (t in rows) {
-            font.drawString(nameText(t), 0f, y.toFloat(), 0xFFFFFFFF.toInt(), textShadow)
+            if (showHead) {
+                // Face then hat layer, the same way the tab list draws heads
+                mc.textureManager.bindTexture(t.skin ?: DefaultPlayerSkin.getDefaultSkinLegacy())
+                GlStateManager.enableBlend()
+                GlStateManager.color(1f, 1f, 1f, if (t.dead) 0.5f else 1f)
+                Gui.drawScaledCustomSizeModalRect(0, y, 8f, 8f, 8, 8, HEAD_SIZE, HEAD_SIZE, 64f, 64f)
+                Gui.drawScaledCustomSizeModalRect(0, y, 40f, 8f, 8, 8, HEAD_SIZE, HEAD_SIZE, 64f, 64f)
+                GlStateManager.color(1f, 1f, 1f, 1f)
+            }
+            font.drawString(nameText(t), nameX.toFloat(), y.toFloat(), 0xFFFFFFFF.toInt(), textShadow)
             if (showHeart) {
                 mc.textureManager.bindTexture(Gui.icons)
                 GlStateManager.color(1f, 1f, 1f, 1f)
