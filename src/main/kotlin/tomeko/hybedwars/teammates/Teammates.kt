@@ -62,10 +62,11 @@ object Teammates {
     //?}
 
     /**
-     * Everyone seen alive on our team this game. Hypixel turns dead players into spectators and,
-     * after a final kill, greys out their tab name, so their team can't be read from the tab list any more.
+     * Everyone seen alive on our team this game, with their skin. When a player dies Hypixel either
+     * turns them into a gray spectator or drops them from the tab list completely, so after that
+     * their team can't be read from the tab list any more.
      */
-    private val knownTeammates = HashSet<String>()
+    private val knownTeammates = LinkedHashMap<String, SkinId>()
     private var knownColor: Char? = null
     private var knownServer: String? = null
 
@@ -85,14 +86,14 @@ object Teammates {
         /*val me = mc.thePlayer ?: return emptyList()
         val world = mc.theWorld ?: return emptyList()
         val net = mc.netHandler ?: return emptyList()
-        val myInfo = net.getPlayerInfo(me.uniqueID) ?: return emptyList()
+        val myInfo = net.getPlayerInfo(me.uniqueID)
         val entries: Collection<TabEntry> = net.playerInfoMap
         val myName = me.name
         *///?} else {
         val me = mc.player ?: return emptyList()
         val world = mc.level ?: return emptyList()
         val net = mc.connection ?: return emptyList()
-        val myInfo = net.getPlayerInfo(me.uuid) ?: return emptyList()
+        val myInfo = net.getPlayerInfo(me.uuid)
         val entries: Collection<TabEntry> = net.onlinePlayers
         val myName = me.gameProfile.name()
         //?}
@@ -105,10 +106,10 @@ object Teammates {
             knownColor = null
         }
 
-        var myColor = teamColor(myInfo)
+        var myColor = myInfo?.let(::teamColor)
         // Gray is used for spectators and players without a team, so it never counts as a team.
         if (myColor == null || myColor == '7') {
-            // We may have been final killed ourselves, keep showing the team we were on.
+            // We may have died ourselves (or dropped out of the tab list), keep showing the team we were on.
             if (!includeDead) return emptyList()
             myColor = knownColor ?: return emptyList()
         } else if (myColor != knownColor) {
@@ -120,15 +121,17 @@ object Teammates {
         val rangeSq = range.toDouble() * range
         val distances = HashMap<Teammate, Double>()
         val result = ArrayList<Teammate>()
+        val inTabList = HashSet<String>()
 
         for (info in entries) {
             val name = nameOf(info)
+            val skin = skinOf(info)
             val alive = !isSpectator(info) && teamColor(info) == myColor
-            if (alive) knownTeammates.add(name)
+            if (alive) knownTeammates[name] = skin
+            inTabList.add(name)
             if (!includeSelf && name == myName) continue
 
             val displayName = "§$myColor$name"
-            val skin = skinOf(info)
 
             //? if 1.8.9 {
             /*val player: PlayerEntity? = world.getPlayerEntityByName(name)
@@ -172,6 +175,14 @@ object Teammates {
 
                 // Out of render distance, fall back to the health Hypixel shows in the tab list.
                 else -> result.add(Teammate(displayName, tabListHealth(name) ?: -1f, 20f, skin = skin))
+            }
+        }
+
+        // Teammates who dropped out of the tab list after dying (they can't be "nearby", so not in Castle mode)
+        if (includeDead && !nearbyOnly) {
+            for ((name, skin) in knownTeammates) {
+                if (name in inTabList || (!includeSelf && name == myName)) continue
+                result.add(Teammate("§$myColor$name", 0f, 20f, true, skin))
             }
         }
 
