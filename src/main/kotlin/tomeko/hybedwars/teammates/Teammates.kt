@@ -126,8 +126,15 @@ object Teammates {
         for (info in entries) {
             val name = nameOf(info)
             val skin = skinOf(info)
-            val alive = !isSpectator(info) && teamColor(info) == myColor
-            if (alive) knownTeammates[name] = skin
+            val color = teamColor(info)
+            val spectator = isSpectator(info)
+            val alive = !spectator && color == myColor
+            if (alive) {
+                knownTeammates[name] = skin
+            } else if (!spectator && color != null && color != '7') {
+                // Alive on another team, so never one of ours
+                knownTeammates.remove(name)
+            }
             inTabList.add(name)
             if (!includeSelf && name == myName) continue
 
@@ -254,11 +261,20 @@ object Teammates {
         //?}
     }
 
-    /** The last color code before the player's name in the tab list, or null if there is none. */
+    /**
+     * The last color code before the player's name in the tab list, or null if the player isn't on a team.
+     *
+     * Only a BedWars team letter right before the name counts as a team, e.g. "[1152✫] B Name"
+     * (the level in front is optional). Before the game starts the tab list is colored by rank
+     * ("[MVP+] Name"), and players who share your rank color there must not be remembered as teammates.
+     */
     private fun teamColor(info: TabEntry): Char? {
         val formatted = tabListName(info)
         val nameIndex = formatted.indexOf(nameOf(info))
         val prefix = if (nameIndex >= 0) formatted.substring(0, nameIndex) else formatted
+
+        val tag = prefix.removeFormatting().trim().substringAfterLast(' ')
+        if (tag.length != 1 || !tag[0].isUpperCase()) return null
 
         var color: Char? = null
         for (i in 0 until prefix.length - 1) {
