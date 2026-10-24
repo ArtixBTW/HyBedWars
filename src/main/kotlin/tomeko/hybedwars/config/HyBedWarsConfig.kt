@@ -12,8 +12,12 @@ import org.polyfrost.oneconfig.api.config.v1.Config
 import org.polyfrost.oneconfig.api.config.v1.annotations.*
 //?}
 //? if forge {
-//import tomeko.hybedwars.hud.BedwarsResourceDisplay
-//?}
+/*import tomeko.hybedwars.hud.BedwarsResourceDisplay
+import tomeko.hybedwars.hud.GameModeHud
+import tomeko.hybedwars.hud.HeightLimitHud
+import tomeko.hybedwars.hud.MapNameHud
+import tomeko.hybedwars.hud.TeammateHud
+*///?}
 //? if 1.8.9
 //import tomeko.hybedwars.coloredbeds.ColoredBeds
 import tomeko.hybedwars.utils.Constants
@@ -243,6 +247,48 @@ object HyBedWarsConfig : Config(
         subcategory = SUBCATEGORY_BEDWARS_RESOURCE_DISPLAY
     )
     var bedwarsResourceDisplayInfo: Nothing? = null
+    //?}
+
+    //? if forge {
+    //@Exclude
+    //?}
+    private const val SUBCATEGORY_INFO_HUDS = "Info HUDs"
+
+    //? if forge {
+    /*@HUD(
+        name = "Height Limit",
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_INFO_HUDS
+    )
+    var heightLimitHud = HeightLimitHud()
+
+    @HUD(
+        name = "Map Name",
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_INFO_HUDS
+    )
+    var mapNameHud = MapNameHud()
+
+    @HUD(
+        name = "Game Mode",
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_INFO_HUDS
+    )
+    var gameModeHud = GameModeHud()
+
+    @HUD(
+        name = "Teammates",
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_INFO_HUDS
+    )
+    var teammateHud = TeammateHud()
+    *///?} else {
+    @Info(
+        title = "Height Limit, Map Name, Game Mode and Teammates HUDs can be added by clicking Edit HUD in the top left corner",
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_INFO_HUDS
+    )
+    var infoHudsInfo: Nothing? = null
     //?}
 
 
