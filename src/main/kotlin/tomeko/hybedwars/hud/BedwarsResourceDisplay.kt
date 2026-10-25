@@ -31,7 +31,7 @@ import org.polyfrost.oneconfig.api.hud.v1.HudManager
 import org.polyfrost.oneconfig.api.hud.v1.LegacyHud
 //?}
 import tomeko.hybedwars.config.HyBedWarsConfig
-import tomeko.hybedwars.location.HypixelPackets
+import tomeko.hybedwars.utils.HypixelPackets
 import tomeko.hybedwars.utils.Constants
 import tomeko.hybedwars.utils.ItemTracker
 
@@ -92,13 +92,28 @@ class BedwarsResourceDisplay
     var textShadowColor = PolyColor(0xFF000000.toInt())
     //?}
 
+    @Dropdown(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Mode",
+        options = ["Vertical", "Horizontal"],
+        //? if !forge {
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_GENERAL
+        //?}
+    )
+    var mode = 0
+
     @Slider(
         //? if forge {
         //name =
-            //?} else {
+        //?} else {
         title =
             //?}
-        "Item Padding",
+            "Item Padding",
         min = 0f,
         max = 10f,
         //? if !forge {
@@ -112,10 +127,10 @@ class BedwarsResourceDisplay
     @Slider(
         //? if forge {
         //name =
-            //?} else {
+        //?} else {
         title =
             //?}
-        "Icon Padding",
+            "Icon Padding",
         min = 0f,
         max = 10f,
         //? if !forge {
@@ -126,13 +141,28 @@ class BedwarsResourceDisplay
     )
     var iconPadding = 5f
 
+    @Dropdown(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Padding Side",
+        options = ["Left", "Middle", "Right"],
+        //? if !forge {
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_GENERAL
+        //?}
+    )
+    var paddingSide = 0
+
     @Switch(
         //? if forge {
         //name =
         //?} else {
         title =
-        //?}
-        "Show Iron",
+            //?}
+            "Show Iron",
         //? if !forge {
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
@@ -145,8 +175,8 @@ class BedwarsResourceDisplay
         //name =
         //?} else {
         title =
-        //?}
-        "Show Gold"
+            //?}
+            "Show Gold"
         //? if !forge {
         , category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
@@ -159,8 +189,8 @@ class BedwarsResourceDisplay
         //name =
         //?} else {
         title =
-        //?}
-        "Show Diamond",
+            //?}
+            "Show Diamond",
         //? if !forge {
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
@@ -173,8 +203,8 @@ class BedwarsResourceDisplay
         //name =
         //?} else {
         title =
-        //?}
-        "Show Emerald",
+            //?}
+            "Show Emerald",
         //? if !forge {
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
@@ -187,8 +217,8 @@ class BedwarsResourceDisplay
         //name =
         //?} else {
         title =
-        //?}
-        "Show Inventory",
+            //?}
+            "Show Inventory",
         //? if !forge {
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
@@ -201,8 +231,8 @@ class BedwarsResourceDisplay
         //name =
         //?} else {
         title =
-        //?}
-        "Show Ender Chest",
+            //?}
+            "Show Ender Chest",
         //? if !forge {
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
@@ -215,8 +245,8 @@ class BedwarsResourceDisplay
         //name =
         //?} else {
         title =
-        //?}
-        "Show Total",
+            //?}
+            "Show Total",
         //? if !forge {
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
@@ -229,15 +259,58 @@ class BedwarsResourceDisplay
         //name =
         //?} else {
         title =
-        //?}
-        "Icon Side",
+            //?}
+            "Total Side",
         options = ["Left", "Right"],
         //? if !forge {
         category = CATEGORY_GENERAL,
         subcategory = SUBCATEGORY_RESOURCES
         //?}
     )
-    var side = 0
+    var totalSide = 1
+
+    @Switch(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Show When Zero",
+        //? if !forge {
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_RESOURCES
+        //?}
+    )
+    var showWhenZero = true
+
+    @Switch(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Show In Lobby",
+        //? if !forge {
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_RESOURCES
+        //?}
+    )
+    var showInLobby = true
+
+    @Dropdown(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Icon Side",
+        options = ["Left", "Right"],
+        //? if !forge {
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_RESOURCES
+        //?}
+    )
+    var iconSide = 0
 
     //? if !forge {
     @Switch(
@@ -295,20 +368,18 @@ class BedwarsResourceDisplay
             !HudManager.isEditing
             //?}
             && !HyBedWarsConfig.debugModeEnabled
-            && !HypixelPackets.inBedwars
+            && (!HypixelPackets.inBedwars || (!showInLobby && HypixelPackets.inLobby))
         ) return
 
         val mc =
         //? if 1.8.9 {
-                //Minecraft.getMinecraft()
+        //Minecraft.getMinecraft()
             //?} else {
             Minecraft.getInstance()
         //?}
 
         val iconSize = 16f
         val offset = iconSize + itemPadding
-
-        var longestWidth = 0
 
         val IRON: Item =
         //? if 1.8.9 {
@@ -345,53 +416,85 @@ class BedwarsResourceDisplay
             EMERALD
         )
 
-        fun showItem(item: Item): Boolean = when (item) {
-            IRON -> showIron
-            GOLD -> showGold
-            DIAMOND -> showDiamond
-            EMERALD -> showEmerald
-            else -> false
+        fun showItem(item: Item): Boolean {
+            val inventoryAmount = ItemTracker.inventory[item] ?: 0
+            val enderChestAmount = ItemTracker.enderChest[item] ?: 0
+
+            return (showWhenZero ||
+                    (showTotal && inventoryAmount + enderChestAmount > 0) ||
+                    (showInventory && inventoryAmount > 0) ||
+                    (showEnderChest && enderChestAmount > 0)) &&
+                    when (item) {
+                        IRON -> showIron
+                        GOLD -> showGold
+                        DIAMOND -> showDiamond
+                        EMERALD -> showEmerald
+                        else -> false
+                    }
         }
+
+        fun String.appendAmount(amount: String): String =
+            this + (if (this.isNotEmpty()) " " else "") + amount
+
+        fun String.appendTotal(inventoryAmount: Int, enderChestAmount: Int): String =
+            this.appendAmount(
+                if (showInventory || showEnderChest)
+                    "(${inventoryAmount + enderChestAmount})"
+                else
+                    "${inventoryAmount + enderChestAmount}"
+            )
 
         fun getText(item: Item): String {
             val inventoryAmount = ItemTracker.inventory[item] ?: 0
             val enderChestAmount = ItemTracker.enderChest[item] ?: 0
 
             var text = ""
-            if (showInventory) text += inventoryAmount.toString()
-
-            if (showEnderChest) {
-                if (showInventory) text += " + "
-                text += enderChestAmount.toString()
+            if (totalSide == 0 && showTotal) {
+                text = text.appendTotal(inventoryAmount, enderChestAmount)
             }
 
-            if (showTotal) {
-                if (showInventory || showEnderChest) text += " "
-                text += "(${inventoryAmount + enderChestAmount})"
+            if (showInventory && showEnderChest) {
+                text = text.appendAmount("$inventoryAmount + $enderChestAmount")
+            } else if (showInventory) {
+                text = text.appendAmount(inventoryAmount.toString())
+            } else if (showEnderChest) {
+                text = text.appendAmount(enderChestAmount.toString())
+            }
+
+            if (totalSide == 1 && showTotal) {
+                text = text.appendTotal(inventoryAmount, enderChestAmount)
             }
 
             return text
         }
 
-        for (item in items) {
-            if (!showItem(item)) continue
+        fun measure(text: String): Int =
+        //? if 1.8.9 {
+        //mc.fontRendererObj.getStringWidth(text)
+            //?} else {
+            mc.font.width(text)
+        //?}
 
-            longestWidth = maxOf(
-                longestWidth,
-                //? if 1.8.9 {
-                //mc.fontRendererObj.getStringWidth(
-                    //?} else {
-                mc.font.width(
-                    //?}
-                    getText(item)
-                )
-            )
+        val visibleItems = items.filter { showItem(it) }
+        val texts = visibleItems.map { getText(it) }
+        val textWidths = texts.map { measure(it) }
+        val entryWidths = textWidths.map { it + iconPadding + iconSize }
+
+        val size = visibleItems.size
+        val horizontal = mode == 1
+
+        if (size == 0) {
+            actualWidth = 1f
+            actualHeight = 1f
+            return
         }
 
-        var size = 0
-        for (item in items) {
-            if (showItem(item)) size++
-        }
+        val contentWidth: Float =
+            if (horizontal) entryWidths.sum() + (size - 1) * itemPadding
+            else entryWidths.maxOrNull() ?: 0f
+        val contentHeight: Float =
+            if (horizontal) iconSize
+            else size * offset - itemPadding
 
         //? if forge {
         /*UGraphics.GL.pushMatrix()
@@ -407,34 +510,42 @@ class BedwarsResourceDisplay
         if (background) {
             //? if ornithe {
             //Gui.drawRect(
-                //?} else {
+            //?} else {
             mcCtx.fill(
                 //?}
                 -backgroundRadius.toInt(),
                 -backgroundRadius.toInt(),
-                (longestWidth + iconPadding + iconSize).toInt() + backgroundRadius.toInt(),
-                (size * offset - itemPadding).toInt() + backgroundRadius.toInt(),
+                contentWidth.toInt() + backgroundRadius.toInt(),
+                contentHeight.toInt() + backgroundRadius.toInt(),
                 backgroundColor.argb
             )
         }
         //?}
 
-        var i = 0
-        for (item in items) {
-            if (!showItem(item)) continue
-
+        var cursorX = 0f
+        for ((i, item) in visibleItems.withIndex()) {
             val stack = ItemStack(item)
-            val itemY = (i * offset).toInt()
-            val text = getText(item)
-            val textWidth =
-            //? if 1.8.9 {
-            //mc.fontRendererObj.getStringWidth(text)
-                //?} else {
-                mc.font.width(text)
-            //?}
+            val text = texts[i]
+            val textWidth = textWidths[i]
+            val entryWidth = entryWidths[i]
 
-            val textX = if (side == 1) 0 else (iconSize + iconPadding).toInt()
-            val iconX = if (side == 1) (textWidth + iconPadding).toInt()
+            val entryX: Int
+            val itemY: Int
+            if (horizontal) {
+                entryX = cursorX.toInt()
+                itemY = 0
+                cursorX += entryWidth + itemPadding
+            } else {
+                entryX = when (paddingSide) {
+                    1 -> ((contentWidth - entryWidth) / 2f).toInt()
+                    2 -> (contentWidth - entryWidth).toInt()
+                    else -> 0
+                }
+                itemY = (i * offset).toInt()
+            }
+
+            val textX = entryX + if (iconSide == 1) 0 else (iconSize + iconPadding).toInt()
+            val iconX = entryX + if (iconSide == 1) (textWidth + iconPadding).toInt()
             else 0
 
             //? if 1.8.9 {
@@ -521,8 +632,6 @@ class BedwarsResourceDisplay
             //?}
 
             //?}
-
-            i++
         }
 
         //? if forge {
@@ -533,8 +642,8 @@ class BedwarsResourceDisplay
         mcCtx.pose().popMatrix()
         //?}
 
-        actualWidth = longestWidth + iconPadding + iconSize
-        actualHeight = size * offset - itemPadding
+        actualWidth = contentWidth
+        actualHeight = contentHeight
     }
 
     //? if forge {
@@ -545,10 +654,10 @@ class BedwarsResourceDisplay
         actualHeight * scale
 
     override fun shouldShow(): Boolean =
-        super.shouldShow() && (HyBedWarsConfig.debugModeEnabled || HypixelPackets.inBedwars)
+        super.shouldShow() && (HyBedWarsConfig.debugModeEnabled || (HypixelPackets.inBedwars && (showInLobby || !HypixelPackets.inLobby)))
     *///?} else {
-    override val width: Float = actualWidth
-    override val height: Float = actualHeight
+    override val width: Float get() = actualWidth
+    override val height: Float get() = actualHeight
     override fun minimumSize(): Pair<Float, Float> = actualWidth to actualHeight
     override fun defaultPosition(): Pair<Float, Float> = 0f to 0f
     override fun update(): Boolean = true

@@ -28,7 +28,7 @@ import tomeko.hybedwars.config.HyBedWarsConfig
 import tomeko.hybedwars.event.LevelRenderEvents
 import tomeko.hybedwars.event.RenderWorldLastEvent
 *///?}
-import tomeko.hybedwars.location.HypixelPackets
+import tomeko.hybedwars.utils.HypixelPackets
 import kotlin.math.floor
 
 object HeightLimitRenderer {

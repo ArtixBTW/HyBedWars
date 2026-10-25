@@ -38,7 +38,6 @@ import tomeko.hybedwars.config.HyBedWarsConfig
 //? if ornithe {
 //import tomeko.hybedwars.event.ClientReceiveMessageEvents
 //?}
-import tomeko.hybedwars.location.HypixelPackets
 import java.util.regex.Pattern
 
 object ItemTracker {

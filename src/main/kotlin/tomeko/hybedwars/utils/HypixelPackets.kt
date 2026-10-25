@@ -1,4 +1,4 @@
-package tomeko.hybedwars.location
+package tomeko.hybedwars.utils
 
 import net.hypixel.data.type.ServerType
 import net.hypixel.modapi.HypixelModAPI
@@ -13,10 +13,8 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent
 *///?} elif ornithe {
 //import net.ornithemc.osl.networking.api.client.ClientConnectionEvents
 //?} else {
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 //?}
-import tomeko.hybedwars.utils.Debug
 
 object HypixelPackets {
     var onHypixel = false
@@ -29,6 +27,9 @@ object HypixelPackets {
         private set
 
     var inGame = false
+        private set
+
+    var inLobby = false
         private set
 
     var inBedwars = false
@@ -80,6 +81,8 @@ object HypixelPackets {
         val serverTypeName = packet.serverType.get().name
         Debug.log("serverTypeName: $serverTypeName <")
 
+        inLobby = packet.lobbyName.isPresent
+
         inBedwars = serverTypeName == "Bed Wars"
 
         if (!packet.map.isPresent) {
@@ -109,6 +112,7 @@ object HypixelPackets {
     private fun disableServerTypes() {
         currentServerType = null
         inGame = false
+        inLobby = false
         inBedwars = false
     }
 

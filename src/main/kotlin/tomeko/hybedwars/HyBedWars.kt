@@ -16,7 +16,6 @@ import tomeko.hybedwars.commands.*
 import tomeko.hybedwars.config.*
 import tomeko.hybedwars.heightlimit.*
 import tomeko.hybedwars.hud.*
-import tomeko.hybedwars.location.*
 import tomeko.hybedwars.utils.*
 
 //? if forge {

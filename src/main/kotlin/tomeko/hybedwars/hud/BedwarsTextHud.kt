@@ -51,8 +51,14 @@ abstract class BedwarsTextHud(
         //?}
 
         // Same colors as Minecraft's §a, §e and §c
+        //? if forge
+        //@Exclude
         const val COLOR_GOOD = 0xFF55FF55.toInt()
+        //? if forge
+        //@Exclude
         const val COLOR_WARN = 0xFFFFFF55.toInt()
+        //? if forge
+        //@Exclude
         const val COLOR_BAD = 0xFFFF5555.toInt()
 
         private fun colorCode(color: Int?): String = when (color) {

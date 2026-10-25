@@ -12,7 +12,7 @@ import net.minecraft.client.player.LocalPlayer
 //?}
 import net.hypixel.data.type.GameType
 import tomeko.hybedwars.config.HyBedWarsConfig
-import tomeko.hybedwars.location.HypixelPackets
+import tomeko.hybedwars.utils.HypixelPackets
 import tomeko.hybedwars.utils.Constants
 
 object MiningFatigueNotifier {

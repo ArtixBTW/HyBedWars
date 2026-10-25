@@ -36,7 +36,7 @@ import tomeko.hybedwars.teammates.PlayerFaces
 import tomeko.hybedwars.teammates.SkinId
 //?}
 import tomeko.hybedwars.config.HyBedWarsConfig
-import tomeko.hybedwars.location.HypixelPackets
+import tomeko.hybedwars.utils.HypixelPackets
 import tomeko.hybedwars.teammates.Teammates
 import tomeko.hybedwars.teammates.Teammates.Teammate
 import tomeko.hybedwars.utils.Constants
@@ -65,31 +65,57 @@ class TeammateHud
             PlayerFaces.register()
         }
 
+        //? if forge
+        //@Exclude
         private const val SUBCATEGORY_HEALTH = "Health"
+        //? if forge
+        //@Exclude
         private const val SUBCATEGORY_PLAYERS = "Players"
 
+        //? if forge
+        //@Exclude
         private const val COLUMN_GAP = 4f
+        //? if forge
+        //@Exclude
         private const val ROW_GAP = 1f
 
         // Vanilla colors of the § codes 0-9 and a-f
+        //? if forge
+        //@Exclude
         private const val LEGACY_CODES = "0123456789abcdef"
+        //? if forge
+        //@Exclude
         private val LEGACY_RGB = intArrayOf(
             0xFF000000.toInt(), 0xFF0000AA.toInt(), 0xFF00AA00.toInt(), 0xFF00AAAA.toInt(),
             0xFFAA0000.toInt(), 0xFFAA00AA.toInt(), 0xFFFFAA00.toInt(), 0xFFAAAAAA.toInt(),
             0xFF555555.toInt(), 0xFF5555FF.toInt(), 0xFF55FF55.toInt(), 0xFF55FFFF.toInt(),
             0xFFFF5555.toInt(), 0xFFFF55FF.toInt(), 0xFFFFFF55.toInt(), 0xFFFFFFFF.toInt()
         )
+        //? if forge
+        //@Exclude
         private val GRAY = LEGACY_RGB[7]
+        //? if forge
+        //@Exclude
         private val WHITE = LEGACY_RGB[15]
 
+        //? if forge
+        //@Exclude
         private val NEAREST = FilterMipmap(FilterMode.NEAREST, MipmapMode.NONE)
+        //? if forge
+        //@Exclude
         private val DEAD_HEAD = Paint().apply { alpha = 128 }
         //?}
 
+        //? if forge
+        //@Exclude
         private const val HEART_SIZE = 9
+        //? if forge
+        //@Exclude
         private const val HEAD_SIZE = 8
 
         // Placeholder rows for the HUD editor and its preview card
+        //? if forge
+        //@Exclude
         private val EXAMPLE = listOf(
             Teammate("§cTeammateOne", 20f, 20f),
             Teammate("§cTeammateTwo", 11f, 20f),

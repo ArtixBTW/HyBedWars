@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.TntBlock
 //?}
 import net.hypixel.data.type.GameType
 import tomeko.hybedwars.config.HyBedWarsConfig
-import tomeko.hybedwars.location.HypixelPackets
+import tomeko.hybedwars.utils.HypixelPackets
 
 object BlockNotifier {
     private var ticks = -1

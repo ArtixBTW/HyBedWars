@@ -3,7 +3,7 @@ package tomeko.hybedwars.hud
 import net.minecraft.client.Minecraft
 import tomeko.hybedwars.config.HyBedWarsConfig
 import tomeko.hybedwars.heightlimit.HeightLimitData
-import tomeko.hybedwars.location.HypixelPackets
+import tomeko.hybedwars.utils.HypixelPackets
 import java.util.Locale
 import kotlin.math.floor
 
