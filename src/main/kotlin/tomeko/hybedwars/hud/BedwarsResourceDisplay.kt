@@ -275,6 +275,20 @@ class BedwarsResourceDisplay
         //?} else {
         title =
             //?}
+            "Compact Numbers",
+        //? if !forge {
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_RESOURCES
+        //?}
+    )
+    var compactNumbers = true
+
+    @Switch(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
             "Show When Zero",
         //? if !forge {
         category = CATEGORY_GENERAL,
@@ -416,6 +430,12 @@ class BedwarsResourceDisplay
             EMERALD
         )
 
+        /**
+         * If we should render the Ender Chest amount and thus also the total
+         */
+        fun shouldShowFull(enderChestAmount: Int): Boolean =
+            !compactNumbers || enderChestAmount != 0
+
         fun showItem(item: Item): Boolean {
             val inventoryAmount = ItemTracker.inventory[item] ?: 0
             val enderChestAmount = ItemTracker.enderChest[item] ?: 0
@@ -448,21 +468,26 @@ class BedwarsResourceDisplay
             val inventoryAmount = ItemTracker.inventory[item] ?: 0
             val enderChestAmount = ItemTracker.enderChest[item] ?: 0
 
+            val shouldShowFull = shouldShowFull(enderChestAmount)
+
             var text = ""
-            if (totalSide == 0 && showTotal) {
+            if (totalSide == 0 && showTotal && shouldShowFull) {
                 text = text.appendTotal(inventoryAmount, enderChestAmount)
             }
 
-            if (showInventory && showEnderChest) {
-                text = text.appendAmount("$inventoryAmount + $enderChestAmount")
-            } else if (showInventory) {
+            if (showInventory) {
                 text = text.appendAmount(inventoryAmount.toString())
-            } else if (showEnderChest) {
-                text = text.appendAmount(enderChestAmount.toString())
+                text += if (shouldShowFull && showEnderChest) " +" else " "
             }
 
-            if (totalSide == 1 && showTotal) {
-                text = text.appendTotal(inventoryAmount, enderChestAmount)
+            if (shouldShowFull) {
+                if (showEnderChest) {
+                    text = text.appendAmount(enderChestAmount.toString())
+                }
+
+                if (totalSide == 1 && showTotal) {
+                    text = text.appendTotal(inventoryAmount, enderChestAmount)
+                }
             }
 
             return text
