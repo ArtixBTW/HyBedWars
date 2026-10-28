@@ -457,12 +457,12 @@ class BedwarsResourceDisplay
             this + (if (this.isNotEmpty()) " " else "") + amount
 
         fun String.appendTotal(inventoryAmount: Int, enderChestAmount: Int): String =
-            this.appendAmount(
-                if (showInventory || showEnderChest)
-                    "(${inventoryAmount + enderChestAmount})"
-                else
-                    "${inventoryAmount + enderChestAmount}"
-            )
+            if (showInventory || showEnderChest) {
+                this.appendAmount("(${inventoryAmount + enderChestAmount})")
+            } else {
+                // if total is the only element don't prepend a space for no reason
+                "${inventoryAmount + enderChestAmount}"
+            }
 
         fun getText(item: Item): String {
             val inventoryAmount = ItemTracker.inventory[item] ?: 0
