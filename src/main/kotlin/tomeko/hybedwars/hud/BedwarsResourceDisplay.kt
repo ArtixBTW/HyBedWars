@@ -275,6 +275,20 @@ class BedwarsResourceDisplay
         //?} else {
         title =
             //?}
+            "Compact Numbers",
+        //? if !forge {
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_RESOURCES
+        //?}
+    )
+    var compactNumbers = true
+
+    @Switch(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
             "Show When Zero",
         //? if !forge {
         category = CATEGORY_GENERAL,
@@ -433,39 +447,52 @@ class BedwarsResourceDisplay
                     }
         }
 
-        fun String.appendAmount(amount: String): String =
-            this + (if (this.isNotEmpty()) " " else "") + amount
+        fun StringBuilder.appendAmount(amount: String) =
+            apply {
+                this.append(if (this.isNotEmpty()) " " else "")
+                this.append(amount)
+            }
 
-        fun String.appendTotal(inventoryAmount: Int, enderChestAmount: Int): String =
-            this.appendAmount(
-                if (showInventory || showEnderChest)
-                    "(${inventoryAmount + enderChestAmount})"
-                else
-                    "${inventoryAmount + enderChestAmount}"
-            )
+        fun StringBuilder.appendTotal(inventoryAmount: Int, enderChestAmount: Int) =
+            if (showInventory || showEnderChest) {
+                this.appendAmount("(${inventoryAmount + enderChestAmount})")
+            } else {
+                // if total is the only element don't prepend a space for no reason
+                append("${inventoryAmount + enderChestAmount}")
+            }
 
         fun getText(item: Item): String {
             val inventoryAmount = ItemTracker.inventory[item] ?: 0
             val enderChestAmount = ItemTracker.enderChest[item] ?: 0
 
-            var text = ""
-            if (totalSide == 0 && showTotal) {
-                text = text.appendTotal(inventoryAmount, enderChestAmount)
+            val totalOnly = !(showInventory || showEnderChest)
+
+            val shouldShowFull = !compactNumbers || enderChestAmount != 0
+
+            val text = StringBuilder()
+            if ((shouldShowFull || totalOnly) && totalSide == 0 && showTotal) {
+                text.appendTotal(inventoryAmount, enderChestAmount)
             }
 
-            if (showInventory && showEnderChest) {
-                text = text.appendAmount("$inventoryAmount + $enderChestAmount")
-            } else if (showInventory) {
-                text = text.appendAmount(inventoryAmount.toString())
-            } else if (showEnderChest) {
-                text = text.appendAmount(enderChestAmount.toString())
+            if (showInventory) {
+                text.appendAmount(inventoryAmount.toString())
+
+                if (showEnderChest && shouldShowFull) {
+                    text.append(" +")
+                }
             }
 
-            if (totalSide == 1 && showTotal) {
-                text = text.appendTotal(inventoryAmount, enderChestAmount)
+            if (showEnderChest && (shouldShowFull || !showInventory)) {
+                text.appendAmount(enderChestAmount.toString())
             }
 
-            return text
+            if ((shouldShowFull || totalOnly) && totalSide == 1 && showTotal) {
+                text.appendTotal(inventoryAmount, enderChestAmount)
+            }
+
+            text.append(" ")
+
+            return text.toString()
         }
 
         fun measure(text: String): Int =
