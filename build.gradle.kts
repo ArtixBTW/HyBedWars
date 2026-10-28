@@ -33,6 +33,7 @@ repositories {
 
     maven("https://api.modrinth.com/maven")
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://redirector.kotlinlang.org/maven/compose-dev")
     maven("https://repo.polyfrost.org/releases")
     maven("https://repo.polyfrost.org/snapshots")
     maven("https://maven.terraformersmc.com/")

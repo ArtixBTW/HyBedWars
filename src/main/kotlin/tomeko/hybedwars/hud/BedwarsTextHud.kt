@@ -36,8 +36,8 @@ abstract class BedwarsTextHud(
     hudDescription: String
 )
 //? if forge {
-/*: SingleTextHud(defaultLabel, false)
-*///?} else {
+//: SingleTextHud(defaultLabel, false)
+//?} else {
     : TextHud("${Constants.MOD_ID}_$id.json", hudTitle, Category.INFO, "$defaultLabel: ")
 //?}
 {

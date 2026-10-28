@@ -51,7 +51,7 @@ object HyBedWarsConfig : Config(
         addDependency("blockNumber", "blockNotify")
         addDependency("blockNotifySound", "blockNotify")
         //? if 1.8.9
-        addListener("coloredBeds") { ColoredBeds.reloadRenderers() }
+        //addListener("coloredBeds") { ColoredBeds.reloadRenderers() }
         *///?} else {
         preload()
         for ((condition, dependencies) in DEPENDENCIES) {

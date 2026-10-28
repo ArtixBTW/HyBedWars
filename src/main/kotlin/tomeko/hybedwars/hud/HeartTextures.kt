@@ -60,8 +60,8 @@ object HeartTextures {
 
     private fun read(path: String): ByteArray {
         //? if ornithe {
-        /*return Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(path)).inputStream.use { it.readBytes() }
-        *///?} else {
+        //return Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(path)).inputStream.use { it.readBytes() }
+        //?} else {
         return Minecraft.getInstance().resourceManager
             .getResource(Identifier.withDefaultNamespace(path))
             .orElseThrow { IllegalStateException("missing $path") }

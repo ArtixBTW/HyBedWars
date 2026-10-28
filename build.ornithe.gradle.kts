@@ -22,6 +22,7 @@ repositories {
 
     maven("https://maven.cloverclient.com/releases")
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://redirector.kotlinlang.org/maven/compose-dev")
     maven("https://repo.polyfrost.org/releases")
     maven("https://repo.polyfrost.org/snapshots")
 }
@@ -54,15 +55,6 @@ dependencies {
     ploceus.dependOsl(oslVersion)
 
     modImplementation("org.polyfrost.oneconfig:$minecraftVersion-ornithe:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:commands:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:config:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:config-impl:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:events:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:internal:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:ui:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:utils:$oneconfigVersion")
-    implementation("org.polyfrost.oneconfig:hud:$oneconfigVersion")
-
     modImplementation("org.polyfrost:mod-api-fabric:$hypixelModApiVersion+build.2+mc$minecraftVersion")
     modImplementation("com.terraformersmc:modmenu:$modMenuVersion+mc$minecraftVersion")
 }
