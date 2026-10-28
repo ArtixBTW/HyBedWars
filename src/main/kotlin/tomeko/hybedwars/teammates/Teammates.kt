@@ -43,7 +43,7 @@ object Teammates {
     class Teammate(
         /** Name with the team's color code in front. */
         val displayName: String,
-        /** Health in half hearts, or -1 if unknown. */
+        /** Health + Absorption in half hearts, or -1 if unknown. */
         val health: Float,
         val maxHealth: Float,
         val dead: Boolean = false,
@@ -159,7 +159,7 @@ object Teammates {
 
                 val teammate =
                     if (isDead(player)) Teammate(displayName, 0f, player.maxHealth, true, skin)
-                    else Teammate(displayName, player.health, player.maxHealth, skin = skin)
+                    else Teammate(displayName, player.health + player.absorptionAmount, player.maxHealth, skin = skin)
 
                 if (!teammate.dead || includeDead) {
                     distances[teammate] = distSq
@@ -178,7 +178,7 @@ object Teammates {
                 player != null && isDead(player) ->
                     if (includeDead) result.add(Teammate(displayName, 0f, player.maxHealth, true, skin))
 
-                player != null -> result.add(Teammate(displayName, player.health, player.maxHealth, skin = skin))
+                player != null -> result.add(Teammate(displayName, player.health + player.absorptionAmount, player.maxHealth, skin = skin))
 
                 // Out of render distance, fall back to the health Hypixel shows in the tab list.
                 else -> result.add(Teammate(displayName, tabListHealth(name) ?: -1f, 20f, skin = skin))
