@@ -55,106 +55,10 @@ class BedwarsResourceDisplay
         //? if !forge {
         private const val CATEGORY_GENERAL = "General"
         private const val SUBCATEGORY_GENERAL = "General"
-        private const val SUBCATEGORY_RESOURCES = "Resources"
-        private const val CATEGORY_BACKGROUND = "Background"
+        private const val CATEGORY_FORMATTING = "Formatting"
+        private const val CATEGORY_STYLING = "Styling"
         //?}
     }
-
-    //? if forge {
-    /*@Dropdown(
-        name = "Text Type",
-        options = ["No Shadow", "Shadow", "Full Shadow"]
-    )
-    var textType = 0
-
-    @Color(name = "Text Color")
-    var textColor: OneColor = OneColor(255, 255, 255)
-    *///?} else {
-    @Color(
-        title = "Text Color",
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_GENERAL
-    )
-    var txtColor = PolyColor(0xFFFFFFFF.toInt())
-
-    @Switch(
-        title = "Text Shadow",
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_GENERAL
-    )
-    var textShadow = true
-
-    @Color(
-        title = "Text Shadow Color",
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_GENERAL
-    )
-    var textShadowColor = PolyColor(0xFF000000.toInt())
-    //?}
-
-    @Dropdown(
-        //? if forge {
-        //name =
-        //?} else {
-        title =
-            //?}
-            "Mode",
-        options = ["Vertical", "Horizontal"],
-        //? if !forge {
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_GENERAL
-        //?}
-    )
-    var mode = 0
-
-    @Slider(
-        //? if forge {
-        //name =
-        //?} else {
-        title =
-            //?}
-            "Item Padding",
-        min = 0f,
-        max = 10f,
-        //? if !forge {
-        step = 0.1f,
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_GENERAL
-        //?}
-    )
-    var itemPadding = 5f
-
-    @Slider(
-        //? if forge {
-        //name =
-        //?} else {
-        title =
-            //?}
-            "Icon Padding",
-        min = 0f,
-        max = 10f,
-        //? if !forge {
-        step = 0.1f,
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_GENERAL
-        //?}
-    )
-    var iconPadding = 5f
-
-    @Dropdown(
-        //? if forge {
-        //name =
-        //?} else {
-        title =
-            //?}
-            "Padding Side",
-        options = ["Left", "Middle", "Right"],
-        //? if !forge {
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_GENERAL
-        //?}
-    )
-    var paddingSide = 0
 
     @Switch(
         //? if forge {
@@ -163,9 +67,10 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Show Iron",
+        description = "Show iron counter",
         //? if !forge {
         category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showIron = true
@@ -176,10 +81,11 @@ class BedwarsResourceDisplay
         //?} else {
         title =
             //?}
-            "Show Gold"
+            "Show Gold",
+        description = "Show gold counter",
         //? if !forge {
-        , category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        category = CATEGORY_GENERAL,
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showGold = true
@@ -191,9 +97,10 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Show Diamond",
+        description = "Show diamond counter",
         //? if !forge {
         category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showDiamond = true
@@ -205,9 +112,10 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Show Emerald",
+        description = "Show emerald counter",
         //? if !forge {
         category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showEmerald = true
@@ -219,9 +127,10 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Show Inventory",
+        description = "Show inventory counter",
         //? if !forge {
         category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showInventory = true
@@ -233,9 +142,10 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Show Ender Chest",
+        description = "Show ender chest counter",
         //? if !forge {
         category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showEnderChest = true
@@ -247,9 +157,10 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Show Total",
+        description = "Show (inventory + ender chest) counter",
         //? if !forge {
         category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showTotal = true
@@ -260,14 +171,99 @@ class BedwarsResourceDisplay
         //?} else {
         title =
             //?}
+            "Mode",
+        description = "Change display mode",
+        options = ["Vertical", "Horizontal"],
+        //? if !forge {
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
+        //?}
+    )
+    var mode = 0
+
+    @Slider(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Counters Padding",
+        description = "Change spacing between the counters",
+        min = 0f,
+        max = 10f,
+        //? if !forge {
+        step = 0.1f,
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
+        //?}
+    )
+    var countersPadding = 5f
+
+    @Slider(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Icon Padding",
+        description = "Change spacing between the icon and the text",
+        min = 0f,
+        max = 10f,
+        //? if !forge {
+        step = 0.1f,
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
+        //?}
+    )
+    var iconPadding = 5f
+
+    @Dropdown(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
             "Total Side",
+        description = "Change side of the total counter display",
         options = ["Left", "Right"],
         //? if !forge {
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var totalSide = 1
+
+    @Dropdown(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Icon Side",
+        description = "Change side of the icons",
+        options = ["Left", "Right"],
+        //? if !forge {
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
+        //?}
+    )
+    var iconSide = 0
+
+    @Dropdown(
+        //? if forge {
+        //name =
+        //?} else {
+        title =
+            //?}
+            "Padding Side",
+        description = "Change padding side of the display in vertical mode",
+        options = ["Left", "Middle", "Right"],
+        //? if !forge {
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
+        //?}
+    )
+    var paddingSide = 0
 
     @Switch(
         //? if forge {
@@ -276,9 +272,10 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Compact Numbers",
+        description = "Hide ender chest counter when equals 0",
         //? if !forge {
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var compactNumbers = true
@@ -289,13 +286,14 @@ class BedwarsResourceDisplay
         //?} else {
         title =
             //?}
-            "Show When Zero",
+            "Hide When Zero",
+        description = "Hide counter if both inventory and ender chest equal 0",
         //? if !forge {
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
-    var showWhenZero = true
+    var hideWhenZero = false
 
     @Switch(
         //? if forge {
@@ -304,47 +302,78 @@ class BedwarsResourceDisplay
         title =
             //?}
             "Show In Lobby",
+        description = "Show in Hypixel BedWars lobby",
         //? if !forge {
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
+        category = CATEGORY_FORMATTING,
+        subcategory = SUBCATEGORY_GENERAL
         //?}
     )
     var showInLobby = true
 
-    @Dropdown(
-        //? if forge {
-        //name =
-        //?} else {
-        title =
-            //?}
-            "Icon Side",
-        options = ["Left", "Right"],
-        //? if !forge {
-        category = CATEGORY_GENERAL,
-        subcategory = SUBCATEGORY_RESOURCES
-        //?}
+    //? if forge {
+    /*@Dropdown(
+        name = "Text Shadow",
+        description = "Change text shadow",
+        options = ["No Shadow", "Shadow", "Full Shadow"]
     )
-    var iconSide = 0
+    var textType = 0
+
+    @Color(
+        name = "Text Color",
+        description = "Change text color"
+    )
+    var textColor: OneColor = OneColor(255, 255, 255)
+    *///?} else {
+    @Color(
+        title = "Text Color",
+        description = "Change text color",
+        category = CATEGORY_STYLING,
+        subcategory = SUBCATEGORY_GENERAL
+    )
+    var txtColor = PolyColor(0xFFFFFFFF.toInt())
+
+    @Switch(
+        title = "Text Shadow",
+        description = "Add text shadow",
+        category = CATEGORY_STYLING,
+        subcategory = SUBCATEGORY_GENERAL
+    )
+    var textShadow = true
+
+    @Color(
+        title = "Text Shadow Color",
+        description = "Change text shadow color",
+        category = CATEGORY_STYLING,
+        subcategory = SUBCATEGORY_GENERAL
+    )
+    var textShadowColor = PolyColor(0xFF000000.toInt())
+    //?}
 
     //? if !forge {
     @Switch(
         title = "Show Background",
-        category = CATEGORY_BACKGROUND
+        description = "Show background behind resource display",
+        category = CATEGORY_STYLING,
+        subcategory = SUBCATEGORY_GENERAL
     )
     var background = false
 
     @Color(
         title = "Background Color",
-        category = CATEGORY_BACKGROUND
+        description = "Change background color behind resource display",
+        category = CATEGORY_STYLING,
+        subcategory = SUBCATEGORY_GENERAL
     )
     var backgroundColor = PolyColor(0x80000000.toInt())
 
     @Slider(
         title = "Background Radius",
+        description = "Change background radius behind resource display",
         min = 0f,
         max = 10f,
         step = 0.1f,
-        category = CATEGORY_BACKGROUND
+        category = CATEGORY_STYLING,
+        subcategory = SUBCATEGORY_GENERAL
     )
     var backgroundRadius = 5f
     //?}
@@ -393,7 +422,7 @@ class BedwarsResourceDisplay
         //?}
 
         val iconSize = 16f
-        val offset = iconSize + itemPadding
+        val offset = iconSize + countersPadding
 
         val IRON: Item =
         //? if 1.8.9 {
@@ -434,7 +463,7 @@ class BedwarsResourceDisplay
             val inventoryAmount = ItemTracker.inventory[item] ?: 0
             val enderChestAmount = ItemTracker.enderChest[item] ?: 0
 
-            return (showWhenZero ||
+            return (!hideWhenZero ||
                     (showTotal && inventoryAmount + enderChestAmount > 0) ||
                     (showInventory && inventoryAmount > 0) ||
                     (showEnderChest && enderChestAmount > 0)) &&
@@ -517,11 +546,11 @@ class BedwarsResourceDisplay
         }
 
         val contentWidth: Float =
-            if (horizontal) entryWidths.sum() + (size - 1) * itemPadding
+            if (horizontal) entryWidths.sum() + (size - 1) * countersPadding
             else entryWidths.maxOrNull() ?: 0f
         val contentHeight: Float =
             if (horizontal) iconSize
-            else size * offset - itemPadding
+            else size * offset - countersPadding
 
         //? if forge {
         /*UGraphics.GL.pushMatrix()
@@ -561,7 +590,7 @@ class BedwarsResourceDisplay
             if (horizontal) {
                 entryX = cursorX.toInt()
                 itemY = 0
-                cursorX += entryWidth + itemPadding
+                cursorX += entryWidth + countersPadding
             } else {
                 entryX = when (paddingSide) {
                     1 -> ((contentWidth - entryWidth) / 2f).toInt()
