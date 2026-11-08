@@ -31,7 +31,11 @@ import org.polyfrost.oneconfig.api.hud.v1.HudManager
 //?}
 import tomeko.hybedwars.config.HyBedWarsConfig
 import tomeko.hybedwars.location.HypixelPackets
+import tomeko.hybedwars.restylers.HardcoreHearts
 import tomeko.hybedwars.teammates.Teammates.Teammate
+import tomeko.hybedwars.teammates.heart_textures.HardcoreHeartTextures
+import tomeko.hybedwars.teammates.heart_textures.HeartTextures
+import tomeko.hybedwars.teammates.heart_textures.RegularHeartTextures
 import tomeko.hybedwars.utils.Constants
 import tomeko.hybedwars.utils.removeFormatting
 import java.util.Locale
@@ -357,8 +361,10 @@ class TeammateHud
                     }
                 }
                 if (showHeart) {
+                    val textures = if (HardcoreHearts.shouldForce()) HardcoreHeartTextures else RegularHeartTextures
+
                     PolyColumn(gap = ROW_GAP * scale) {
-                        for (row in rows) Heart(row.alive, HEART_SIZE * scale)
+                        for (row in rows) Heart(textures, row.alive, HEART_SIZE * scale)
                     }
                 }
                 PolyColumn(gap = ROW_GAP * scale) {
@@ -403,9 +409,9 @@ class TeammateHud
     }
 
     @Composable
-    private fun Heart(full: Boolean, size: Float) {
+    private fun Heart(textures: HeartTextures, full: Boolean, size: Float) {
         PolyCanvas(modifier = PolyModifier.size(size, size)) { x, y, w, h ->
-            HeartTextures.draw(this, x, y, w, h, full)
+            textures.draw(this, x, y, w, h, full)
         }
     }
 
